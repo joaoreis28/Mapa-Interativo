@@ -58,8 +58,8 @@ Para rodar este projeto, você precisará configurar o backend (API) e o fronten
 
 1.  **Clone o repositório:**
     ```bash
-    git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
-    cd seu-repositorio
+    git clone https://github.com/joaoreis28/Mapa-Interativo.git
+    cd Mapa-Interativo
     ```
 
 2.  **Instale as dependências do servidor:**
