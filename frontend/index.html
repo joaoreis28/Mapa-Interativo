@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-groupedlayercontrol@0.6.1/dist/leaflet.groupedlayercontrol.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visão Geográfica - Paraná</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<body>
+
+    <header>
+        <h1>Visão Geográfica - Análise de Dados do Paraná</h1>
+    </header>
+
+    <div class="main-content">
+        <aside class="sidebar">
+            <h2>Painel de Controle</h2>
+            <div id="info-panel">
+                <h3>Informações da Seleção</h3>
+                <div id="info-content">
+                    <p class="info-placeholder">
+                      Clique em uma feição no mapa para ver os detalhes aqui.
+                    </p>
+                </div>
+            </div>
+
+            <div id="bd-filter-panel" class="filter-panel" style="display: none;">
+                <h4>Filtrar Ocorrências (BD)</h4>
+                <div id="filtro-periodo-bd">
+                    <label><input type="radio" name="periodo-bd" value="todos" checked> Todos</label>
+                    <label><input type="radio" name="periodo-bd" value="manha"> Manhã (6h-12h)</label>
+                    <label><input type="radio" name="periodo-bd" value="tarde"> Tarde (12h-18h)</label>
+                    <label><input type="radio" name="periodo-bd" value="noite"> Noite (18h-6h)</label>
+                </div>
+            </div>
+
+            <div id="crime-filter-panel" class="filter-panel" style="display: none;">
+                <h4>Filtrar Ocorrências (Guarda)</h4>
+                <div id="filtro-periodo-guarda">
+                    <label><input type="radio" name="periodo-guarda" value="todos" checked> Todos</label>
+                    <label><input type="radio" name="periodo-guarda" value="manha"> Manhã (6h-12h)</label>
+                    <label><input type="radio" name="periodo-guarda" value="tarde"> Tarde (12h-18h)</label>
+                    <label><input type="radio" name="periodo-guarda" value="noite"> Noite (18h-6h)</label>
+                </div>
+
+                <h5 style="margin-top: 15px; margin-bottom: 5px;">Tipo de Ocorrência:</h5>
+                
+                <div class="botoes-filtro" style="margin-bottom: 8px;">
+                    <button id="select-all-guarda-types" style="cursor: pointer;">Marcar Todos</button>
+                    <button id="deselect-all-guarda-types" style="cursor: pointer;">Desmarcar Todos</button>
+                </div>
+                <div id="filtro-tipo-guarda-container" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+                    </div>
+            </div>
+            
+            <div class="legend" id="population-legend">
+                <h4>População dos Municípios</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #800026;"></div>
+                    <span>Mais de 500.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #BD0026;"></div>
+                    <span>100.000 – 500.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #E31A1C;"></div>
+                    <span>50.000 – 100.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #FC4E2A;"></div>
+                    <span>20.000 – 50.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #FD8D3C;"></div>
+                    <span>10.000 – 20.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #FEB24C;"></div>
+                    <span>5.000 – 10.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #FED976;"></div>
+                    <span>Menos de 5.000</span>
+                </div>
+            </div>
+
+            <div class="legend" id="income-legend">
+                <h4>Renda Média Mensal (R$)</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #751902;"></div>
+                    <span>Mais de 10.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f94e23;"></div>
+                    <span>Mais de 5.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #c47d00;"></div>
+                    <span>3.000 – 5.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #8e9417;"></div>
+                    <span>2.000 – 3.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #5f9f55;"></div>
+                    <span>1.000 – 2.000</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #45a185;"></div>
+                    <span>Menos de 1.000</span>
+                </div>
+            </div>
+
+            <div class="legend" id="literacy-legend">
+                <h4>Taxa de Alfabetização (%)</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #08306b;"></div>
+                    <span>Mais de 98%</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #08519c;"></div>
+                    <span>95% – 98%</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #2171b5;"></div>
+                    <span>90% – 95%</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #4292c6;"></div>
+                    <span>85% – 90%</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #6baed6;"></div>
+                    <span>80% – 85%</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #9ecae1;"></div>
+                    <span>70% – 80%</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #c6dbef;"></div>
+                    <span>Menos de 70%</span>
+                </div>
+            </div>
+            </aside>
+
+        <main id="map-container">
+            <div id="loader">Carregando dados...</div>
+            <div id="mapa"></div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet-groupedlayercontrol@0.6.1/dist/leaflet.groupedlayercontrol.min.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
